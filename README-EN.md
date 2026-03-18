@@ -8,6 +8,31 @@ An AI pipeline that automatically finds trending topics, generates scripts, crea
 
 ---
 
+## Sample Slides
+
+> Generated with `python auto_video.py --topic "NVIDIA GTC 2026 AI Revolution" --lang ko`
+
+<table>
+  <tr>
+    <td><img src="docs/sample_slide_01.png" width="200"/></td>
+    <td><img src="docs/sample_slide_02.png" width="200"/></td>
+    <td><img src="docs/sample_slide_03.png" width="200"/></td>
+    <td><img src="docs/sample_slide_04.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center">Slide 1 — HOOK</td>
+    <td align="center">Slide 2 — INTRO</td>
+    <td align="center">Slide 3 — CORE</td>
+    <td align="center">Slide 4 — CORE</td>
+  </tr>
+</table>
+
+- **Resolution**: 1080×1920 (9:16)
+- **Design**: NVIDIA Green `#76B900` on Deep Black
+- **Layout**: Section tag · Emoji icon · Headline · Stats · Chips · VO Script box
+
+---
+
 ## Features
 
 | Feature | Description |

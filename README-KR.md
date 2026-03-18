@@ -8,6 +8,31 @@
 
 ---
 
+## 샘플 슬라이드
+
+> `python auto_video.py --topic "NVIDIA GTC 2026 AI Revolution" --lang ko` 로 생성
+
+<table>
+  <tr>
+    <td><img src="docs/sample_slide_01.png" width="200"/></td>
+    <td><img src="docs/sample_slide_02.png" width="200"/></td>
+    <td><img src="docs/sample_slide_03.png" width="200"/></td>
+    <td><img src="docs/sample_slide_04.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center">슬라이드 1 — HOOK</td>
+    <td align="center">슬라이드 2 — INTRO</td>
+    <td align="center">슬라이드 3 — CORE</td>
+    <td align="center">슬라이드 4 — CORE</td>
+  </tr>
+</table>
+
+- **해상도**: 1080×1920 (9:16)
+- **디자인**: NVIDIA Green `#76B900` + 딥 블랙
+- **구성**: Section 태그 · 이모지 아이콘 · 헤드라인 · 통계 박스 · 칩 뱃지 · VO 스크립트 박스
+
+---
+
 ## 주요 기능
 
 | 기능 | 설명 |
