@@ -1,6 +1,7 @@
 """
 PIL/Pillow를 이용한 슬라이드 이미지 생성 모듈
 해상도: 1080x1920 (9:16 YouTube Shorts)
+다국어 지원: ko, en, ja, zh, es, fr, de, pt, ar, hi, it, ru
 """
 import sys
 if hasattr(sys.stdout, "reconfigure"):
@@ -24,19 +25,98 @@ C = {
     "border":     ( 35,  60, 15),
 }
 
-# 폰트 후보 경로 (Windows → Linux → macOS)
-FONT_CANDIDATES = [
-    r"C:\Windows\Fonts\malgunbd.ttf",
-    r"C:\Windows\Fonts\malgun.ttf",
-    r"C:\Windows\Fonts\gulim.ttc",
-    "/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc",
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-    "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+# ── 언어별 폰트 후보 (우선순위 순) ──────────────────────────
+_WIN = r"C:\Windows\Fonts"
+_LINUX_NOTO = "/usr/share/fonts/truetype/noto"
+_LINUX_NOTO_OT = "/usr/share/fonts/opentype/noto"
+
+FONT_CANDIDATES_BY_LANG = {
+    # Korean (한국어)
+    "ko": [
+        f"{_WIN}\\malgunbd.ttf",
+        f"{_WIN}\\malgun.ttf",
+        f"{_WIN}\\gulim.ttc",
+        f"{_LINUX_NOTO}/NotoSansCJK-Bold.ttc",
+        f"{_LINUX_NOTO_OT}/NotoSansCJK-Bold.ttc",
+        "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+    ],
+    # Japanese (日本語)
+    "ja": [
+        f"{_WIN}\\YuGothB.ttc",
+        f"{_WIN}\\meiryo.ttc",
+        f"{_WIN}\\msgothic.ttc",
+        f"{_WIN}\\malgunbd.ttf",
+        f"{_LINUX_NOTO}/NotoSansCJK-Bold.ttc",
+        "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+    ],
+    # Chinese Simplified (简体中文)
+    "zh": [
+        f"{_WIN}\\msyh.ttc",
+        f"{_WIN}\\simhei.ttf",
+        f"{_WIN}\\simsun.ttc",
+        f"{_WIN}\\malgunbd.ttf",
+        f"{_LINUX_NOTO}/NotoSansCJK-Bold.ttc",
+        "/System/Library/Fonts/PingFang.ttc",
+    ],
+    # Arabic (العربية) — note: PIL renders RTL as LTR visually
+    "ar": [
+        f"{_WIN}\\arabtype.ttf",
+        f"{_WIN}\\trado.ttf",
+        f"{_WIN}\\arial.ttf",
+        f"{_LINUX_NOTO}/NotoNaskhArabic-Bold.ttf",
+        "/System/Library/Fonts/GeezaPro.ttc",
+    ],
+    # Hindi / Devanagari (हिन्दी)
+    "hi": [
+        f"{_WIN}\\NirmalaB.ttf",
+        f"{_WIN}\\Nirmala.ttf",
+        f"{_WIN}\\arial.ttf",
+        f"{_LINUX_NOTO}/NotoSansDevanagari-Bold.ttf",
+    ],
+    # Russian / Cyrillic (Русский)
+    "ru": [
+        f"{_WIN}\\arialbd.ttf",
+        f"{_WIN}\\arial.ttf",
+        f"{_WIN}\\malgunbd.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    ],
+}
+
+# Latin-script languages share the same font list
+_LATIN_FONTS = [
+    f"{_WIN}\\arialbd.ttf",
+    f"{_WIN}\\arial.ttf",
+    f"{_WIN}\\malgunbd.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "/System/Library/Fonts/Helvetica.ttc",
 ]
+for _lang in ("en", "es", "fr", "de", "pt", "it"):
+    FONT_CANDIDATES_BY_LANG[_lang] = _LATIN_FONTS
+
+# ── 언어별 채널명 ────────────────────────────────────────────
+CHANNEL_BY_LANG = {
+    "ko": "@AI테크뉴스",
+    "en": "@AITechNews",
+    "ja": "@AIテックニュース",
+    "zh": "@AI科技新闻",
+    "es": "@AITechNoticias",
+    "fr": "@AITechActu",
+    "de": "@AITechNews",
+    "pt": "@AITechNoticias",
+    "ar": "@AITechNews",
+    "hi": "@AITechHindi",
+    "it": "@AITechNotizie",
+    "ru": "@AIТехНовости",
+}
 
 
-def _find_font():
-    for p in FONT_CANDIDATES:
+def _find_font(lang="ko"):
+    candidates = FONT_CANDIDATES_BY_LANG.get(lang, _LATIN_FONTS)
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    # 최종 fallback: 어떤 CJK 폰트든 찾기
+    for p in FONT_CANDIDATES_BY_LANG["ko"]:
         if os.path.exists(p):
             return p
     return None
@@ -46,11 +126,13 @@ class SlideMaker:
     W = 1080
     H = 1920
 
-    def __init__(self, output_dir, searcher=None, images_dir=None):
+    def __init__(self, output_dir, searcher=None, images_dir=None, lang="ko"):
         self.output_dir = Path(output_dir)
         self.searcher = searcher        # ImageSearcher 인스턴스 (없으면 배경 이미지 없이 진행)
         self.images_dir = Path(images_dir) if images_dir else None
-        self.font_path = _find_font()
+        self.lang = lang
+        self.channel_name = CHANNEL_BY_LANG.get(lang, "@AITechNews")
+        self.font_path = _find_font(lang)
         self.fonts = self._load_fonts()
 
     # ── 폰트 로드 ───────────────────────────────────────────
@@ -258,7 +340,7 @@ class SlideMaker:
         tags = " ".join(f"#{c}" for c in chips[:3])
         if tags:
             draw.text((40, y), tags, font=self.fonts["micro"], fill=C["green_dim"])
-        draw.text((W - 220, y), "@AI테크뉴스", font=self.fonts["micro"], fill=(55, 75, 35))
+        draw.text((W - 220, y), self.channel_name, font=self.fonts["micro"], fill=(55, 75, 35))
 
     # ── 헬퍼: 중앙 정렬 텍스트 그리기 ──────────────────────
     def _draw_centered(self, draw, text, y, font, color, max_w):

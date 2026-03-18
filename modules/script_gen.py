@@ -1,10 +1,86 @@
 """
-Claude API를 이용한 YouTube Shorts 스크립트 생성 모듈
+Claude API를 이용한 YouTube Shorts 다국어 스크립트 생성 모듈
 """
 
 import os
 import json
 import anthropic
+
+# ── 언어 설정 ───────────────────────────────────────────────────
+LANG_CONFIG = {
+    "ko": {
+        "name": "Korean",
+        "native": "한국어",
+        "channel": "@AI테크뉴스",
+        "duration_map": {"1min": "1분", "3min": "3분", "5min": "5분", "10min": "10분"},
+    },
+    "en": {
+        "name": "English",
+        "native": "English",
+        "channel": "@AITechNews",
+        "duration_map": {"1min": "1 min", "3min": "3 min", "5min": "5 min", "10min": "10 min"},
+    },
+    "ja": {
+        "name": "Japanese",
+        "native": "日本語",
+        "channel": "@AIテックニュース",
+        "duration_map": {"1min": "1分", "3min": "3分", "5min": "5分", "10min": "10分"},
+    },
+    "zh": {
+        "name": "Chinese (Simplified)",
+        "native": "中文",
+        "channel": "@AI科技新闻",
+        "duration_map": {"1min": "1分钟", "3min": "3分钟", "5min": "5分钟", "10min": "10分钟"},
+    },
+    "es": {
+        "name": "Spanish",
+        "native": "Español",
+        "channel": "@AITechNoticias",
+        "duration_map": {"1min": "1 min", "3min": "3 min", "5min": "5 min", "10min": "10 min"},
+    },
+    "fr": {
+        "name": "French",
+        "native": "Français",
+        "channel": "@AITechActu",
+        "duration_map": {"1min": "1 min", "3min": "3 min", "5min": "5 min", "10min": "10 min"},
+    },
+    "de": {
+        "name": "German",
+        "native": "Deutsch",
+        "channel": "@AITechNews",
+        "duration_map": {"1min": "1 Min", "3min": "3 Min", "5min": "5 Min", "10min": "10 Min"},
+    },
+    "pt": {
+        "name": "Portuguese (Brazilian)",
+        "native": "Português",
+        "channel": "@AITechNoticias",
+        "duration_map": {"1min": "1 min", "3min": "3 min", "5min": "5 min", "10min": "10 min"},
+    },
+    "ar": {
+        "name": "Arabic",
+        "native": "العربية",
+        "channel": "@AITechNews",
+        "duration_map": {"1min": "1 دقيقة", "3min": "3 دقائق", "5min": "5 دقائق", "10min": "10 دقائق"},
+    },
+    "hi": {
+        "name": "Hindi",
+        "native": "हिन्दी",
+        "channel": "@AITechHindi",
+        "duration_map": {"1min": "1 मिनट", "3min": "3 मिनट", "5min": "5 मिनट", "10min": "10 मिनट"},
+    },
+    "it": {
+        "name": "Italian",
+        "native": "Italiano",
+        "channel": "@AITechNotizie",
+        "duration_map": {"1min": "1 min", "3min": "3 min", "5min": "5 min", "10min": "10 min"},
+    },
+    "ru": {
+        "name": "Russian",
+        "native": "Русский",
+        "channel": "@AIТехНовости",
+        "duration_map": {"1min": "1 мин", "3min": "3 мин", "5min": "5 мин", "10min": "10 мин"},
+    },
+}
 
 
 class ScriptGenerator:
@@ -12,73 +88,72 @@ class ScriptGenerator:
 
     def __init__(self, lang="ko"):
         self.lang = lang
+        self.lang_cfg = LANG_CONFIG.get(lang, LANG_CONFIG["en"])
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
             raise ValueError(
-                "ANTHROPIC_API_KEY 환경변수가 없습니다.\n"
-                ".env 파일을 만들고 API 키를 입력하세요."
+                "ANTHROPIC_API_KEY environment variable not set.\n"
+                "Create a .env file and add your API key."
             )
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate(self, topic, topic_info=None, num_slides=8, duration="5min"):
-        """주제 → JSON 스크립트 생성"""
+        """주제 → JSON 스크립트 생성 (지정 언어로 출력)"""
         if topic_info is None:
             topic_info = {}
 
-        duration_label = {
-            "1min": "1분", "3min": "3분", "5min": "5분", "10min": "10분"
-        }.get(duration, duration)
-
+        cfg = self.lang_cfg
+        lang_name = cfg["name"]
+        duration_label = cfg["duration_map"].get(duration, duration)
         description = topic_info.get("description", "")
         reason = topic_info.get("reason", "")
 
-        prompt = f"""당신은 한국 유튜브 테크 채널 전문 작가입니다.
+        prompt = f"""You are a professional YouTube Shorts scriptwriter for a tech channel.
+Generate ALL content ENTIRELY in {lang_name} language (not English, not any other language).
 
-주제: {topic}
-배경: {description}
-선정 이유: {reason}
-영상 길이: {duration_label}
-슬라이드 수: {num_slides}개
+Topic: {topic}
+Background: {description}
+Reason selected: {reason}
+Video length: {duration_label}
+Number of slides: {num_slides}
 
-아래 JSON 형식으로 YouTube Shorts 스크립트를 작성하세요.
-타겟: IT·테크 관심자, 개발자, 일반 대중
-톤: 전문적이지만 이해하기 쉽게, 임팩트 있게, 숫자와 사실 중심
-
-반드시 순수 JSON만 반환하세요 (코드블록 없이, 설명 없이):
+Return ONLY a pure JSON object — no code blocks, no explanations, no markdown:
 
 {{
-  "youtube_title": "클릭하고 싶은 제목 (60자 이내, 숫자·충격 포함)",
+  "youtube_title": "Clickable title in {lang_name} (under 60 chars, include numbers or impact)",
   "topic": "{topic}",
   "duration": "{duration}",
-  "hashtags": ["#태그1", "#태그2", "#태그3", "#태그4", "#태그5"],
-  "description": "YouTube 영상 설명 (200자 이내, 핵심 요약)",
+  "hashtags": ["#tag1InLang", "#tag2InLang", "#tag3InLang", "#tag4InLang", "#tag5InLang"],
+  "description": "YouTube video description in {lang_name} (under 200 chars, key summary)",
   "slides": [
     {{
       "id": 1,
       "section": "HOOK",
       "time": "0:00-0:30",
       "icon": "💡",
-      "headline": "강렬한 헤드라인 (15자 이내)",
-      "sub_headline": "서브 헤드라인 (25자 이내)",
-      "chips": ["키워드1", "키워드2", "키워드3"],
-      "stats": [{{"value": "숫자", "label": "설명"}}],
-      "script": "이 슬라이드 나레이션. 자연스럽고 임팩트 있게. 30~40초 분량. 시청자가 계속 보고 싶도록."
+      "headline": "Strong headline in {lang_name} (under 30 chars)",
+      "sub_headline": "Sub-headline in {lang_name} (under 50 chars)",
+      "chips": ["keyword1", "keyword2", "keyword3"],
+      "stats": [{{"value": "number", "label": "description in {lang_name}"}}],
+      "script": "Narration in {lang_name} for this slide. Natural, impactful, engaging. 30-40 seconds of speech."
     }}
   ]
 }}
 
-슬라이드 {num_slides}개 구성:
-- 1번: HOOK — 충격적 사실/숫자로 시작, 호기심 자극
-- 2번: 소개 — 주제 배경과 왜 중요한지
-- 3~{num_slides-2}번: 핵심 내용 — 슬라이드당 하나의 핵심 포인트
-- {num_slides-1}번: 임팩트 — 왜 이게 중요한가, 시청자에게 주는 의미
-- {num_slides}번: CTA — 구독·좋아요 유도, 다음 영상 예고
+Slide structure ({num_slides} slides):
+- Slide 1: HOOK — shocking fact or number, spark curiosity immediately
+- Slide 2: INTRO — topic background and why it matters
+- Slides 3–{num_slides - 2}: CORE — one key point per slide, data-driven
+- Slide {num_slides - 1}: IMPACT — what this means for the viewer
+- Slide {num_slides}: CTA — subscribe/like call-to-action, tease next video
 
-중요:
-- 각 script는 해당 슬라이드에서 말할 나레이션 (30~40초 분량)
-- stats는 해당 슬라이드에 수치가 있을 때만 포함 (없으면 [])
-- icon은 내용을 대표하는 이모지 1개
-- chips는 3~4개 키워드"""
+CRITICAL RULES:
+- ALL text (title, scripts, hashtags, labels, descriptions, chips) MUST be in {lang_name}
+- Each "script" field is the spoken narration for that slide (30-40 seconds worth)
+- "stats": include only when there are real numbers (otherwise use [])
+- "icon": exactly one relevant emoji per slide
+- "chips": 3-4 short keywords in {lang_name}
+- Tone: professional yet accessible, impactful, fact-focused"""
 
         message = self.client.messages.create(
             model=self.MODEL,
@@ -110,12 +185,6 @@ class ScriptGenerator:
 
     def _repair_json(self, raw):
         """잘린 JSON을 최대한 복구 — slides 배열을 닫아줌"""
-        # 마지막 완전한 슬라이드 객체까지만 잘라냄
-        # "script" 필드가 닫힌 마지막 위치를 찾음
-        import re
-
-        # 마지막으로 완전히 닫힌 슬라이드 } 위치 찾기
-        # 슬라이드 객체는 }로 끝남 — 역방향 탐색
         brace_depth = 0
         last_safe = -1
         in_string = False
@@ -141,9 +210,8 @@ class ScriptGenerator:
                     last_safe = i
 
         if last_safe == -1:
-            raise ValueError("JSON 복구 불가 — 응답이 너무 짧습니다")
+            raise ValueError("JSON repair failed — response too short")
 
-        # last_safe 이후를 잘라내고 배열·객체 닫기
         truncated = raw[: last_safe + 1]
         truncated = truncated.rstrip().rstrip(",")
         repaired = truncated + "\n  ]\n}"
