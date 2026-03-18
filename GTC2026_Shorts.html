@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTC 2026 — YouTube Shorts Storyboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Inter:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --nvidia: #76B900;
+    --black: #000000;
+    --dark: #0A0A0A;
+    --white: #FFFFFF;
+    --silver: #C0C0C0;
+    --dim: rgba(0,0,0,0.6);
+  }
+
+  body {
+    background: #111;
+    font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 60px;
+  }
+
+  h1.page-title {
+    color: var(--nvidia);
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--nvidia);
+    padding-bottom: 10px;
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  /* ─── SHORTS CARD (9:16 = 360×640) ─── */
+  .card {
+    width: 360px;
+    height: 640px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 40px rgba(118,185,0,0.3), 0 0 80px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+  }
+
+  .card .bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+
+  /* gradient backgrounds per slide */
+  .s1 .bg { background: radial-gradient(ellipse at 50% 30%, #1a1a00 0%, #000 70%),
+    linear-gradient(135deg, #0d0d0d 0%, #000 100%); }
+  .s2 .bg { background: radial-gradient(ellipse at 30% 50%, #001a0d 0%, #000 70%); }
+  .s3 .bg { background: radial-gradient(ellipse at 70% 20%, #001a1a 0%, #000 70%); }
+  .s4 .bg { background: radial-gradient(ellipse at 50% 60%, #0d001a 0%, #000 70%); }
+  .s5 .bg { background: radial-gradient(ellipse at 20% 40%, #001a0d 0%, #000 70%); }
+  .s6 .bg { background: radial-gradient(ellipse at 60% 30%, #1a0d00 0%, #000 70%); }
+  .s7 .bg { background: radial-gradient(ellipse at 50% 50%, #0d0d00 0%, #000 70%); }
+  .s8 .bg { background: radial-gradient(ellipse at 50% 50%, #001a00 0%, #000 70%); }
+
+  /* grid lines overlay */
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(118,185,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(118,185,0,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 1;
+  }
+
+  /* glow circle */
+  .card .glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  .card .content {
+    position: absolute; inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 22px;
+  }
+
+  /* ─── TOP BAR ─── */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .top-bar .nvidia-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .top-bar .nvidia-logo .eye {
+    width: 28px;
+    height: 14px;
+    background: var(--nvidia);
+    border-radius: 0 50% 50% 0;
+    clip-path: polygon(0 50%, 40% 0%, 100% 0%, 100% 100%, 40% 100%);
+  }
+
+  .top-bar .nvidia-logo span {
+    color: var(--nvidia);
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .top-bar .slide-num {
+    background: rgba(118,185,0,0.15);
+    border: 1px solid rgba(118,185,0,0.4);
+    color: var(--nvidia);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .top-bar .time-badge {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--silver);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── MAIN VISUAL AREA ─── */
+  .visual-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 10px 0;
+  }
+
+  .section-tag {
+    background: linear-gradient(135deg, var(--nvidia), #4a7a00);
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  .main-icon {
+    font-size: 56px;
+    filter: drop-shadow(0 0 20px rgba(118,185,0,0.6));
+    line-height: 1;
+  }
+
+  .headline {
+    color: var(--white);
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 30px rgba(118,185,0,0.3);
+  }
+
+  .headline .accent {
+    color: var(--nvidia);
+    display: block;
+  }
+
+  .sub-headline {
+    color: var(--silver);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 280px;
+  }
+
+  /* ─── INFO CHIPS ─── */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .chip {
+    background: rgba(118,185,0,0.12);
+    border: 1px solid rgba(118,185,0,0.3);
+    color: var(--nvidia);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .chip.white {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.15);
+    color: var(--silver);
+  }
+
+  /* ─── STAT BOX ─── */
+  .stat-box {
+    background: rgba(118,185,0,0.08);
+    border: 1px solid rgba(118,185,0,0.25);
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .stat-box .num {
+    color: var(--nvidia);
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .stat-box .label {
+    color: var(--silver);
+    font-size: 10px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ─── SCRIPT BOX ─── */
+  .script-box {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-left: 3px solid var(--nvidia);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px;
+    margin-top: 4px;
+  }
+
+  .script-box .script-label {
+    color: var(--nvidia);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .script-box .script-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--nvidia);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .script-box p {
+    color: #e8e8e8;
+    font-size: 12px;
+    line-height: 1.65;
+    font-weight: 400;
+    font-style: italic;
+    quotes: "\201C" "\201D";
+  }
+
+  .script-box p::before { content: open-quote; color: var(--nvidia); font-size: 18px; line-height: 0; vertical-align: -4px; }
+  .script-box p::after  { content: close-quote; color: var(--nvidia); font-size: 18px; line-height: 0; vertical-align: -4px; }
+
+  /* ─── BOTTOM BAR ─── */
+  .bottom-bar {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 10px;
+  }
+
+  .bottom-bar .gtc-tag {
+    color: rgba(118,185,0,0.7);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .bottom-bar .channel {
+    color: rgba(255,255,255,0.3);
+    font-size: 9px;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .progress .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--nvidia), #4a7a00);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* divider */
+  .page-divider {
+    width: 100%;
+    max-width: 1200px;
+    border: none;
+    border-top: 1px solid rgba(118,185,0,0.2);
+  }
+
+  /* page subtitle */
+  .page-sub {
+    color: rgba(255,255,255,0.4);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+</style>
+</head>
+<body>
+
+<h1 class="page-title">⚡ NVIDIA GTC 2026 — YouTube Shorts Storyboard</h1>
+<p class="page-sub">8 Slides · 9:16 Format (360×640) · 대본 포함</p>
+
+<div class="grid">
+
+  <!-- ═══════════════════════════════════ SLIDE 1: HOOK ═══════════════════════════════════ -->
+  <div class="card s1">
+    <div class="bg"></div>
+    <div class="glow" style="width:300px;height:300px;background:#76B900;top:-100px;left:30px;"></div>
+    <div class="glow" style="width:200px;height:200px;background:#336600;bottom:50px;right:-50px;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">01 / 08</div>
+        <div class="time-badge">0:00 – 0:30</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:12%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">🔥 HOOK</div>
+        <div class="main-icon">💰</div>
+        <div class="headline">
+          <span class="accent">$1 TRILLION</span>
+          AI의 미래를<br>베팅하다
+        </div>
+        <div class="sub-headline">2026년 3월 16일<br>세상이 주목한 하나의 발표</div>
+        <div class="chips">
+          <span class="chip">GTC 2026</span>
+          <span class="chip">Jensen Huang</span>
+          <span class="chip white">San Jose, CA</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>1조 달러. 그건 단순한 숫자가 아닙니다. 그건 인류가 AI에 베팅하는 미래의 규모입니다. 2026년 3월 16일, 세상에서 가장 중요한 테크 발표가 있었습니다.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#GTC2026</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 2: 소개 ═══════════════════════════════════ -->
+  <div class="card s2">
+    <div class="bg"></div>
+    <div class="glow" style="width:250px;height:250px;background:#003300;top:100px;right:-50px;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">02 / 08</div>
+        <div class="time-badge">0:30 – 1:00</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:25%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">📍 GTC 2026 소개</div>
+        <div class="main-icon">🏟️</div>
+        <div class="headline">
+          세계 최대<br>
+          <span class="accent">AI 개발자 콘퍼런스</span>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num">4일</div>
+            <div class="label">Mar 16–19, 2026</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">20<span style="font-size:16px">주년</span></div>
+            <div class="label">CUDA Anniversary</div>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip white">AI Factory</span>
+          <span class="chip white">Agentic AI</span>
+          <span class="chip white">Physical AI</span>
+          <span class="chip white">Inference</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>GTC — GPU Technology Conference. NVIDIA가 매년 여는 세계 최대 AI 개발자 콘퍼런스입니다. 올해는 CUDA 20주년. AI 경제의 다음 20년을 선언한 자리였습니다.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#GTC2026</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 3: Vera Rubin ═══════════════════════════════════ -->
+  <div class="card s3">
+    <div class="bg"></div>
+    <div class="glow" style="width:280px;height:280px;background:#003333;top:-80px;right:20px;"></div>
+    <div class="glow" style="width:180px;height:180px;background:#76B900;bottom:100px;left:-60px;opacity:0.3;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">03 / 08</div>
+        <div class="time-badge">1:00 – 2:00</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:37%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">⚡ 핵심발표 1</div>
+        <div class="main-icon">🖥️</div>
+        <div class="headline">
+          <span class="accent">Vera Rubin</span>
+          차세대 GPU<br>플랫폼
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num" style="font-size:20px">60 EF</div>
+            <div class="label">ExaFLOPS</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" style="font-size:20px">1,152</div>
+            <div class="label">Rubin GPUs</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">10x</div>
+            <div class="label">전력 효율</div>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip">Azure 이미 가동 중 ✅</span>
+          <span class="chip white">Kyber → 2027</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>Vera Rubin 시스템 하나에 1조 2천억 개의 트랜지스터, 1,152개 Rubin GPU, 60 엑사플롭스. 전력 효율은 Grace Blackwell 대비 10배. 이미 Microsoft Azure에서 가동이 시작됐습니다.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#VeRaRubin</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 4: Groq 3 LPU ═══════════════════════════════════ -->
+  <div class="card s4">
+    <div class="bg"></div>
+    <div class="glow" style="width:260px;height:260px;background:#1a003a;top:80px;left:-60px;"></div>
+    <div class="glow" style="width:200px;height:200px;background:#76B900;bottom:-50px;right:30px;opacity:0.25;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">04 / 08</div>
+        <div class="time-badge">2:00 – 2:45</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:50%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">🚀 핵심발표 2</div>
+        <div class="main-icon">⚙️</div>
+        <div class="headline">
+          <span class="accent">Groq 3 LPU</span>
+          추론 혁명의<br>시작
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num" style="font-size:18px">$20B</div>
+            <div class="label">인수 금액</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">256</div>
+            <div class="label">LPU/Rack</div>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip">Inference 전용</span>
+          <span class="chip white">2026 Q3 출시</span>
+          <span class="chip white">역대 최대 M&A</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>AI가 학습만큼 중요해진 것 — 바로 추론(Inference)입니다. NVIDIA는 200억 달러에 Groq를 인수, 전용 칩 Groq 3 LPU를 공개했습니다. 256개 LPU가 하나의 랙에 — 올해 3분기 출시 예정.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#Groq3LPU</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 5: DLSS 5 ═══════════════════════════════════ -->
+  <div class="card s5">
+    <div class="bg"></div>
+    <div class="glow" style="width:300px;height:200px;background:#004400;top:150px;right:-80px;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">05 / 08</div>
+        <div class="time-badge">2:45 – 3:20</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:62%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">🎮 핵심발표 3</div>
+        <div class="main-icon">✨</div>
+        <div class="headline">
+          <span class="accent">DLSS 5</span>
+          신경망 렌더링의<br>새 시대
+        </div>
+        <div class="sub-headline">빛·그림자·머티리얼을<br>포토리얼하게 재현</div>
+
+        <div class="chips">
+          <span class="chip">RTX 50 Series</span>
+          <span class="chip white">2026년 가을 출시</span>
+          <span class="chip white">전 RTX 호환</span>
+          <span class="chip white">Streamline 통합</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>DLSS 5 — 신경망 기반 렌더링 기술의 새 세대. 2026년 가을, RTX 50 시리즈와 함께 출시됩니다. 빛, 그림자, 머티리얼을 포토리얼하게 재현. 기존 RTX 전체 시리즈와 호환됩니다.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#DLSS5 #RTX50</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 6: Agentic AI ═══════════════════════════════════ -->
+  <div class="card s6">
+    <div class="bg"></div>
+    <div class="glow" style="width:240px;height:240px;background:#330d00;top:60px;right:-40px;"></div>
+    <div class="glow" style="width:180px;height:180px;background:#76B900;bottom:80px;left:-40px;opacity:0.2;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">06 / 08</div>
+        <div class="time-badge">3:20 – 3:50</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:75%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">🤖 핵심발표 4</div>
+        <div class="main-icon">🧠</div>
+        <div class="headline">
+          <span class="accent">Agentic AI</span>
+          스스로 생각하고<br>행동한다
+        </div>
+
+        <div class="chips">
+          <span class="chip">NemoClaw OSS</span>
+          <span class="chip white">DGX Spark</span>
+          <span class="chip white">DGX Station</span>
+        </div>
+
+        <div style="background:rgba(118,185,0,0.06);border:1px solid rgba(118,185,0,0.2);border-radius:10px;padding:10px 12px;text-align:left;width:100%;">
+          <div style="color:var(--silver);font-size:10px;line-height:1.8;">
+            🤖 <span style="color:var(--nvidia);font-weight:700;">올라프 로봇</span> 등장 — Disney × NVIDIA<br>
+            📍 Disneyland Paris 3.29 데뷔 예정<br>
+            🔬 물리 AI의 현실화
+          </div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>GTC 2026의 소프트웨어 테마는 하나 — 에이전틱 AI. 스스로 계획하고, 행동하고, 완수하는 AI. NemoClaw 오픈소스 스택과 DGX Spark로 당신의 로컬에서 시작할 수 있습니다.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#AgenticAI</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 7: IMPACT ═══════════════════════════════════ -->
+  <div class="card s7">
+    <div class="bg"></div>
+    <div class="glow" style="width:320px;height:320px;background:#1a1a00;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">07 / 08</div>
+        <div class="time-badge">3:50 – 4:30</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:87%"></div></div>
+
+      <div class="visual-area">
+        <div class="section-tag">💡 왜 중요한가</div>
+        <div class="main-icon">🌍</div>
+        <div class="headline">
+          <span class="accent" style="font-size:40px">$1조</span>
+          AI Factory<br>시대 개막
+        </div>
+
+        <div style="background:rgba(118,185,0,0.06);border:1px solid rgba(118,185,0,0.2);border-radius:12px;padding:14px;width:100%;">
+          <div style="color:var(--silver);font-size:11px;line-height:2;text-align:left;">
+            <span style="color:var(--nvidia);font-weight:700;">2025년</span> 5,000억 달러 예측<br>
+            <span style="color:var(--nvidia);font-weight:700;">2026년</span> <span style="color:#fff;font-weight:900;">1조 달러</span> 수주 목표 ↑<br>
+            <span style="color:var(--nvidia);font-weight:700;">Blackwell + Vera Rubin</span> 합산
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip">CUDA 20주년</span>
+          <span class="chip white">다음 20년 선언</span>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>CUDA가 20년 전 GPU 컴퓨팅의 문을 열었다면, GTC 2026은 AI 경제의 다음 20년을 선언한 자리입니다. 전 세계가 토큰을 생산하는 AI 공장을 짓고 있습니다. 그 중심에 — NVIDIA.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#AIFactory</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ SLIDE 8: CTA ═══════════════════════════════════ -->
+  <div class="card s8">
+    <div class="bg"></div>
+    <div class="glow" style="width:280px;height:280px;background:#004400;top:-60px;right:-60px;"></div>
+    <div class="glow" style="width:220px;height:220px;background:#76B900;bottom:-80px;left:-40px;opacity:0.35;"></div>
+    <div class="content">
+      <div class="top-bar">
+        <div class="nvidia-logo">
+          <div class="eye"></div>
+          <span>NVIDIA</span>
+        </div>
+        <div class="slide-num">08 / 08</div>
+        <div class="time-badge">4:30 – 5:00</div>
+      </div>
+      <div class="progress"><div class="fill" style="width:100%"></div></div>
+
+      <div class="visual-area" style="gap:16px;">
+        <div class="section-tag">🎬 END CARD</div>
+        <div class="main-icon">🙌</div>
+        <div class="headline" style="font-size:22px;">
+          GTC 2026<br>
+          <span class="accent">모든 발표 요약</span>
+          완료
+        </div>
+
+        <!-- CTA buttons visual -->
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <div style="background:var(--nvidia);color:#000;font-weight:900;font-size:13px;padding:10px 18px;border-radius:25px;letter-spacing:0.5px;">
+            👍 좋아요
+          </div>
+          <div style="background:rgba(255,255,255,0.1);color:#fff;font-weight:700;font-size:13px;padding:10px 18px;border-radius:25px;border:1px solid rgba(255,255,255,0.2);">
+            🔔 구독
+          </div>
+        </div>
+
+        <div style="background:rgba(118,185,0,0.06);border:1px solid rgba(118,185,0,0.2);border-radius:12px;padding:12px;width:100%;">
+          <div style="color:var(--silver);font-size:10px;line-height:2;text-align:center;">
+            ⚡ Vera Rubin | ⚙️ Groq 3 LPU<br>
+            ✨ DLSS 5 | 🤖 Agentic AI<br>
+            <span style="color:var(--nvidia);font-weight:700;">심층 분석 영상 채널에서 ▶</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-label">VO SCRIPT</div>
+        <p>이 영상이 도움이 됐다면, 구독과 좋아요 부탁드립니다. GTC 2026 심층 분석 영상을 채널에서 확인해 주세요. AI의 미래, 저희와 함께 따라가시죠.</p>
+      </div>
+
+      <div class="bottom-bar">
+        <span class="gtc-tag">#GTC2026 #NVIDIA</span>
+        <span class="channel">@AI테크뉴스</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="page-divider">
+
+<!-- SUMMARY TABLE -->
+<div style="width:100%;max-width:1200px;color:var(--silver,#C0C0C0);">
+  <h2 style="color:#76B900;font-size:16px;letter-spacing:2px;margin-bottom:16px;">📋 SLIDE SUMMARY</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead>
+      <tr style="background:rgba(118,185,0,0.1);color:#76B900;">
+        <th style="padding:10px;text-align:left;border:1px solid rgba(118,185,0,0.2);">Slide</th>
+        <th style="padding:10px;text-align:left;border:1px solid rgba(118,185,0,0.2);">타임코드</th>
+        <th style="padding:10px;text-align:left;border:1px solid rgba(118,185,0,0.2);">섹션</th>
+        <th style="padding:10px;text-align:left;border:1px solid rgba(118,185,0,0.2);">키 메시지</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">01</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">0:00–0:30</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">HOOK</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">$1조 달러 — AI 베팅의 규모</td>
+      </tr>
+      <tr style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">02</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">0:30–1:00</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">GTC 소개</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">세계 최대 AI 컨퍼런스 + CUDA 20주년</td>
+      </tr>
+      <tr style="border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">03</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">1:00–2:00</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">Vera Rubin</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">60 ExaFLOPS, 10x 효율, Azure 가동</td>
+      </tr>
+      <tr style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">04</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">2:00–2:45</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">Groq 3 LPU</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">추론 전용 칩, $20B 인수, Q3 출시</td>
+      </tr>
+      <tr style="border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">05</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">2:45–3:20</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">DLSS 5</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">신경망 렌더링, RTX 전 시리즈 호환</td>
+      </tr>
+      <tr style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">06</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">3:20–3:50</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">Agentic AI</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">NemoClaw, DGX Spark, 올라프 로봇</td>
+      </tr>
+      <tr style="border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">07</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">3:50–4:30</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">임팩트</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">$1조 수주, AI Factory 시대 개막</td>
+      </tr>
+      <tr style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">08</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">4:30–5:00</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">End Card</td>
+        <td style="padding:10px;border:1px solid rgba(255,255,255,0.06);">구독/좋아요 CTA</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p style="color:rgba(255,255,255,0.2);font-size:11px;padding-bottom:30px;">
+  GTC2026_Shorts.html · NVIDIA GTC 2026 Storyboard · 9:16 Format · 2026-03-17
+</p>
+
+</body>
+</html>
