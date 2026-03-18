@@ -10,20 +10,37 @@ An AI pipeline that automatically finds trending topics, generates scripts, crea
 
 ## Sample Slides
 
-> Generated with `python auto_video.py --topic "NVIDIA GTC 2026 AI Revolution" --lang ko`
+**English** (`--lang en`) · Topic: *"NVIDIA GTC 2026: The AI Revolution"*
 
 <table>
   <tr>
-    <td><img src="docs/sample_slide_01.png" width="200"/></td>
-    <td><img src="docs/sample_slide_02.png" width="200"/></td>
-    <td><img src="docs/sample_slide_03.png" width="200"/></td>
-    <td><img src="docs/sample_slide_04.png" width="200"/></td>
+    <td><img src="docs/sample_en_slide_01.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_02.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_03.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_04.png" width="190"/></td>
   </tr>
   <tr>
-    <td align="center">Slide 1 — HOOK</td>
-    <td align="center">Slide 2 — INTRO</td>
-    <td align="center">Slide 3 — CORE</td>
-    <td align="center">Slide 4 — CORE</td>
+    <td align="center">HOOK</td>
+    <td align="center">INTRO</td>
+    <td align="center">CORE</td>
+    <td align="center">CORE</td>
+  </tr>
+</table>
+
+**Korean** (`--lang ko`) · Topic: *"NVIDIA GTC 2026 AI 혁명"*
+
+<table>
+  <tr>
+    <td><img src="docs/sample_slide_01.png" width="190"/></td>
+    <td><img src="docs/sample_slide_02.png" width="190"/></td>
+    <td><img src="docs/sample_slide_03.png" width="190"/></td>
+    <td><img src="docs/sample_slide_04.png" width="190"/></td>
+  </tr>
+  <tr>
+    <td align="center">HOOK</td>
+    <td align="center">INTRO</td>
+    <td align="center">CORE</td>
+    <td align="center">CORE</td>
   </tr>
 </table>
 

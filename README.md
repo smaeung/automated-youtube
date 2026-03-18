@@ -38,16 +38,29 @@ python auto_video.py --lang ja
 
 ## Sample Output
 
+**Korean (`--lang ko`)**
+
 <table>
   <tr>
-    <td><img src="docs/sample_slide_01.png" width="180"/></td>
-    <td><img src="docs/sample_slide_02.png" width="180"/></td>
-    <td><img src="docs/sample_slide_03.png" width="180"/></td>
-    <td><img src="docs/sample_slide_04.png" width="180"/></td>
+    <td><img src="docs/sample_slide_01.png" width="170"/></td>
+    <td><img src="docs/sample_slide_02.png" width="170"/></td>
+    <td><img src="docs/sample_slide_03.png" width="170"/></td>
+    <td><img src="docs/sample_slide_04.png" width="170"/></td>
   </tr>
 </table>
 
-*1080×1920 slides · NVIDIA Green design · VO Script box · Subtitle overlay MP4*
+**English (`--lang en`)**
+
+<table>
+  <tr>
+    <td><img src="docs/sample_en_slide_01.png" width="170"/></td>
+    <td><img src="docs/sample_en_slide_02.png" width="170"/></td>
+    <td><img src="docs/sample_en_slide_03.png" width="170"/></td>
+    <td><img src="docs/sample_en_slide_04.png" width="170"/></td>
+  </tr>
+</table>
+
+*1080×1920 · NVIDIA Green design · VO Script box · Subtitle overlay MP4*
 
 ## Supported Languages
 

@@ -10,20 +10,37 @@
 
 ## 샘플 슬라이드
 
-> `python auto_video.py --topic "NVIDIA GTC 2026 AI Revolution" --lang ko` 로 생성
+**한국어** (`--lang ko`) · 주제: *"NVIDIA GTC 2026 AI 혁명"*
 
 <table>
   <tr>
-    <td><img src="docs/sample_slide_01.png" width="200"/></td>
-    <td><img src="docs/sample_slide_02.png" width="200"/></td>
-    <td><img src="docs/sample_slide_03.png" width="200"/></td>
-    <td><img src="docs/sample_slide_04.png" width="200"/></td>
+    <td><img src="docs/sample_slide_01.png" width="190"/></td>
+    <td><img src="docs/sample_slide_02.png" width="190"/></td>
+    <td><img src="docs/sample_slide_03.png" width="190"/></td>
+    <td><img src="docs/sample_slide_04.png" width="190"/></td>
   </tr>
   <tr>
-    <td align="center">슬라이드 1 — HOOK</td>
-    <td align="center">슬라이드 2 — INTRO</td>
-    <td align="center">슬라이드 3 — CORE</td>
-    <td align="center">슬라이드 4 — CORE</td>
+    <td align="center">HOOK</td>
+    <td align="center">INTRO</td>
+    <td align="center">CORE</td>
+    <td align="center">CORE</td>
+  </tr>
+</table>
+
+**영어** (`--lang en`) · 주제: *"NVIDIA GTC 2026: The AI Revolution"*
+
+<table>
+  <tr>
+    <td><img src="docs/sample_en_slide_01.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_02.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_03.png" width="190"/></td>
+    <td><img src="docs/sample_en_slide_04.png" width="190"/></td>
+  </tr>
+  <tr>
+    <td align="center">HOOK</td>
+    <td align="center">INTRO</td>
+    <td align="center">CORE</td>
+    <td align="center">CORE</td>
   </tr>
 </table>
 
