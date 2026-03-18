@@ -1,7 +1,7 @@
 """
-트렌드 탐색 모듈 (다국어 지원)
-1차: pytrends (Google Trends — 언어별 국가)
-2차 fallback: 날짜 기반 기본 트렌드 목록
+Trend discovery module with multilingual support.
+Primary: pytrends (Google Trends — country per language)
+Fallback: curated topic list per language
 """
 
 from datetime import datetime
@@ -12,7 +12,8 @@ try:
 except ImportError:
     PYTRENDS_AVAILABLE = False
 
-# ── 언어 → Google Trends 지역/언어 매핑 ───────────────────────
+# ── Language → Google Trends geo/hl mapping ───────────────────
+# Format: lang_code -> (geo, hl, pytrends_region_name)
 GEO_MAP = {
     "ko": ("KR", "ko",    "south_korea"),
     "en": ("US", "en",    "united_states"),
@@ -28,7 +29,7 @@ GEO_MAP = {
     "ru": ("RU", "ru",    "russia"),
 }
 
-# ── 언어별 기본 트렌드 목록 (pytrends 실패 시 fallback) ───────
+# ── Per-language default topic list (used when pytrends fails) ─
 DEFAULT_TOPICS = {
     "ko": [
         {"topic": "NVIDIA GTC 2026 AI 혁명", "reason": "GTC 2026 개최 (3월 16~19일)", "description": "젠슨 황이 발표한 Vera Rubin, Groq 3 LPU, DLSS 5 등 최신 AI 기술"},
@@ -136,8 +137,8 @@ class TrendFinder:
         self.geo, self.hl, self.region = geo_info
 
     def get_trends(self, limit=5):
-        """여러 소스에서 트렌드 수집, 최적 주제 리스트 반환"""
-        # 1차: Google Trends
+        """Collect trends from available sources and return a topic list."""
+        # Primary: Google Trends
         if PYTRENDS_AVAILABLE:
             try:
                 trends = self._google_trends(limit)
@@ -146,7 +147,7 @@ class TrendFinder:
             except Exception as e:
                 print(f"   [warn] Google Trends error: {e}")
 
-        # 2차: fallback
+        # Fallback: built-in topic list
         return self._default_trends(limit)
 
     def _google_trends(self, limit):
@@ -164,6 +165,6 @@ class TrendFinder:
         return results
 
     def _default_trends(self, limit):
-        """언어별 기본 트렌드 목록"""
+        """Return the built-in topic list for the configured language."""
         topics = DEFAULT_TOPICS.get(self.lang, DEFAULT_TOPICS["en"])
         return topics[:limit]

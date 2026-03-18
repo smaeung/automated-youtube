@@ -101,7 +101,7 @@ def main():
     args = parse_args()
     banner(args.lang)
 
-    # ── 출력 디렉토리 ────────────────────────────────────────
+    # ── Output directory ─────────────────────────────────────
     out_dir = Path(args.output)
     out_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

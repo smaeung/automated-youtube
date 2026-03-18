@@ -1,12 +1,13 @@
 """
-Claude API를 이용한 YouTube Shorts 다국어 스크립트 생성 모듈
+YouTube Shorts script generation module using the Claude API.
+Supports 12 output languages via LANG_CONFIG.
 """
 
 import os
 import json
 import anthropic
 
-# ── 언어 설정 ───────────────────────────────────────────────────
+# ── Language configuration ────────────────────────────────────
 LANG_CONFIG = {
     "ko": {
         "name": "Korean",
@@ -98,7 +99,7 @@ class ScriptGenerator:
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate(self, topic, topic_info=None, num_slides=8, duration="5min"):
-        """주제 → JSON 스크립트 생성 (지정 언어로 출력)"""
+        """Generate a JSON script for the given topic in the configured language."""
         if topic_info is None:
             topic_info = {}
 
@@ -163,12 +164,12 @@ CRITICAL RULES:
 
         raw = message.content[0].text.strip()
 
-        # 응답이 잘렸는지 확인
+        # Check if the response was truncated
         if message.stop_reason == "max_tokens":
             print("   [warn] Response truncated — attempting JSON repair...")
             raw = self._repair_json(raw)
 
-        # 코드블록 제거
+        # Strip code block wrappers if present
         if "```json" in raw:
             raw = raw.split("```json")[1].split("```")[0].strip()
         elif "```" in raw:
@@ -184,7 +185,7 @@ CRITICAL RULES:
         return script
 
     def _repair_json(self, raw):
-        """잘린 JSON을 최대한 복구 — slides 배열을 닫아줌"""
+        """Attempt to recover a truncated JSON response by closing open slides array."""
         brace_depth = 0
         last_safe = -1
         in_string = False
@@ -206,11 +207,11 @@ CRITICAL RULES:
                 brace_depth += 1
             elif ch == "}":
                 brace_depth -= 1
-                if brace_depth == 1:   # slides 배열 안의 슬라이드 닫힘
+                if brace_depth == 1:   # a slide object just closed inside the slides array
                     last_safe = i
 
         if last_safe == -1:
-            raise ValueError("JSON repair failed — response too short")
+            raise ValueError("JSON repair failed — response is too short to recover")
 
         truncated = raw[: last_safe + 1]
         truncated = truncated.rstrip().rstrip(",")

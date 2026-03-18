@@ -1,6 +1,6 @@
 """
-edge-tts를 이용한 다국어 TTS 생성 모듈
-지원 언어: ko, en, ja, zh, es, fr, de, pt, ar, hi, it, ru
+Multilingual TTS generation module using edge-tts.
+Supported languages: ko, en, ja, zh, es, fr, de, pt, ar, hi, it, ru
 """
 import sys
 if hasattr(sys.stdout, "reconfigure"):
@@ -15,10 +15,10 @@ try:
 except ImportError:
     EDGE_TTS_AVAILABLE = False
 
-# ── 언어별 음성 매핑 ───────────────────────────────────────────
-# 전체 목록: https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
+# ── Voice map by (language, gender) ───────────────────────────
+# Full list: https://docs.microsoft.com/azure/cognitive-services/speech-service/language-support
 VOICE_MAP = {
-    # Korean (한국어)
+    # Korean
     ("ko", "male"):   "ko-KR-InJoonNeural",
     ("ko", "female"): "ko-KR-SunHiNeural",
 
@@ -26,48 +26,48 @@ VOICE_MAP = {
     ("en", "male"):   "en-US-GuyNeural",
     ("en", "female"): "en-US-JennyNeural",
 
-    # Japanese (日本語)
+    # Japanese
     ("ja", "male"):   "ja-JP-KeitaNeural",
     ("ja", "female"): "ja-JP-NanamiNeural",
 
-    # Chinese Simplified (普通话)
+    # Chinese Simplified
     ("zh", "male"):   "zh-CN-YunjianNeural",
     ("zh", "female"): "zh-CN-XiaoxiaoNeural",
 
-    # Spanish (Español)
+    # Spanish
     ("es", "male"):   "es-ES-AlvaroNeural",
     ("es", "female"): "es-ES-ElviraNeural",
 
-    # French (Français)
+    # French
     ("fr", "male"):   "fr-FR-HenriNeural",
     ("fr", "female"): "fr-FR-DeniseNeural",
 
-    # German (Deutsch)
+    # German
     ("de", "male"):   "de-DE-ConradNeural",
     ("de", "female"): "de-DE-KatjaNeural",
 
-    # Portuguese - Brazilian (Português)
+    # Portuguese (Brazil)
     ("pt", "male"):   "pt-BR-AntonioNeural",
     ("pt", "female"): "pt-BR-FranciscaNeural",
 
-    # Arabic (العربية)
+    # Arabic
     ("ar", "male"):   "ar-SA-HamedNeural",
     ("ar", "female"): "ar-SA-ZariyahNeural",
 
-    # Hindi (हिन्दी)
+    # Hindi
     ("hi", "male"):   "hi-IN-MadhurNeural",
     ("hi", "female"): "hi-IN-SwaraNeural",
 
-    # Italian (Italiano)
+    # Italian
     ("it", "male"):   "it-IT-DiegoNeural",
     ("it", "female"): "it-IT-ElsaNeural",
 
-    # Russian (Русский)
+    # Russian
     ("ru", "male"):   "ru-RU-DmitryNeural",
     ("ru", "female"): "ru-RU-SvetlanaNeural",
 }
 
-# 언어별 TTS 속도 (한/중/일/아랍어는 조금 느리게)
+# TTS speaking rate per language (CJK/Arabic slightly slower for clarity)
 RATE_MAP = {
     "ko": "+10%",
     "ja": "+5%",
@@ -81,19 +81,19 @@ DEFAULT_RATE = "+10%"
 class TTSEngine:
     def __init__(self, lang="ko", voice="male"):
         if not EDGE_TTS_AVAILABLE:
-            raise ImportError("edge-tts를 설치하세요: pip install edge-tts")
+            raise ImportError("edge-tts is not installed: pip install edge-tts")
         self.lang = lang
         key = (lang, voice)
         if key in VOICE_MAP:
             self.voice_name = VOICE_MAP[key]
         else:
-            # 해당 언어의 male fallback 시도
+            # Fallback to male voice for the same language
             fallback = (lang, "male")
             if fallback in VOICE_MAP:
                 self.voice_name = VOICE_MAP[fallback]
                 print(f"   [warn] '{voice}' voice not available for '{lang}', using male")
             else:
-                # 지원 안 되는 언어는 영어로 대체
+                # Unsupported language: fall back to English
                 self.voice_name = VOICE_MAP[("en", "male")]
                 print(f"   [warn] Language '{lang}' not supported, using en-US fallback")
 
@@ -101,7 +101,7 @@ class TTSEngine:
         print(f"   [tts] Voice: {self.voice_name}  Rate: {self.rate}")
 
     def generate_all(self, script, output_dir):
-        """모든 슬라이드 script → MP3 파일 생성"""
+        """Generate MP3 files for every slide script in the JSON."""
         slides = script.get("slides", [])
         paths = []
         total = len(slides)

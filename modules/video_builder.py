@@ -1,5 +1,5 @@
 """
-moviepy: slides + audio -> MP4 (자막 오버레이 포함)
+Video assembly module: slides + audio -> MP4 with subtitle overlay (moviepy).
 """
 import sys
 if hasattr(sys.stdout, "reconfigure"):
@@ -25,14 +25,12 @@ class VideoBuilder:
     def __init__(self):
         if not MOVIEPY_AVAILABLE:
             raise ImportError(
-                "moviepy를 설치하세요: pip install 'moviepy>=1.0.3,<2.0.0'"
+                "moviepy is not installed: pip install 'moviepy>=1.0.3,<2.0.0'"
             )
 
     def build(self, slide_paths, audio_paths, output_path, script=None):
-        """
-        슬라이드 이미지 + TTS 음성 → 자막 포함 MP4 영상.
-        script가 있으면 각 슬라이드 나레이션을 자막으로 오버레이.
-        """
+        """Combine slide images + TTS audio into a subtitle-overlaid MP4.
+        If script is provided, each slide's narration is burned as subtitles."""
         from modules.slide_maker import SlideMaker
 
         if len(slide_paths) != len(audio_paths):
@@ -42,13 +40,13 @@ class VideoBuilder:
             audio_paths = audio_paths[:n]
 
         slides_data = (script or {}).get("slides", [])
-        sub_maker = SlideMaker(output_dir=".")   # 폰트·자막 렌더링용
+        sub_maker = SlideMaker(output_dir=".")   # used only for subtitle rendering
 
         final_clips = []
         total = len(slide_paths)
 
         for i, (img_path, audio_path) in enumerate(zip(slide_paths, audio_paths)):
-            print(f"   [clip] [{i+1}/{total}] 자막 합성 중...")
+            print(f"   [clip] [{i+1}/{total}] compositing subtitles...")
 
             audio = AudioFileClip(audio_path)
             duration = audio.duration
@@ -56,7 +54,7 @@ class VideoBuilder:
             slide_data = slides_data[i] if i < len(slides_data) else {}
             script_text = slide_data.get("script", "").strip()
 
-            # 슬라이드 기본 이미지 로드 (numpy array)
+            # Load base slide image as numpy array
             base = np.array(Image.open(img_path).convert("RGB"))
 
             if script_text:
@@ -72,7 +70,7 @@ class VideoBuilder:
             slide_clip = slide_visual.set_audio(audio)
             final_clips.append(slide_clip)
 
-        print(f"\n   [render] 최종 영상 렌더링 중... (잠시 기다려주세요)")
+        print(f"\n   [render] Rendering final video... (this may take a moment)")
         final = concatenate_videoclips(final_clips, method="compose")
         final.write_videofile(
             output_path,

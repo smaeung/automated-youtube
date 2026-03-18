@@ -1,7 +1,7 @@
 """
-PIL/Pillow를 이용한 슬라이드 이미지 생성 모듈
-해상도: 1080x1920 (9:16 YouTube Shorts)
-다국어 지원: ko, en, ja, zh, es, fr, de, pt, ar, hi, it, ru
+Slide image generation module using PIL/Pillow.
+Resolution: 1080x1920 (9:16 YouTube Shorts)
+Language support: ko, en, ja, zh, es, fr, de, pt, ar, hi, it, ru
 """
 import sys
 if hasattr(sys.stdout, "reconfigure"):
@@ -12,7 +12,7 @@ import numpy as np
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-# ── 색상 팔레트 ──────────────────────────────────────────────
+# ── Color palette ─────────────────────────────────────────────
 C = {
     "bg":         (8,   8,   8),
     "green":      (118, 185,  0),
@@ -25,13 +25,13 @@ C = {
     "border":     ( 35,  60, 15),
 }
 
-# ── 언어별 폰트 후보 (우선순위 순) ──────────────────────────
+# ── Font candidates by language (priority order) ──────────────
 _WIN = r"C:\Windows\Fonts"
 _LINUX_NOTO = "/usr/share/fonts/truetype/noto"
 _LINUX_NOTO_OT = "/usr/share/fonts/opentype/noto"
 
 FONT_CANDIDATES_BY_LANG = {
-    # Korean (한국어)
+    # Korean
     "ko": [
         f"{_WIN}\\malgunbd.ttf",
         f"{_WIN}\\malgun.ttf",
@@ -40,7 +40,7 @@ FONT_CANDIDATES_BY_LANG = {
         f"{_LINUX_NOTO_OT}/NotoSansCJK-Bold.ttc",
         "/System/Library/Fonts/AppleSDGothicNeo.ttc",
     ],
-    # Japanese (日本語)
+    # Japanese
     "ja": [
         f"{_WIN}\\YuGothB.ttc",
         f"{_WIN}\\meiryo.ttc",
@@ -49,7 +49,7 @@ FONT_CANDIDATES_BY_LANG = {
         f"{_LINUX_NOTO}/NotoSansCJK-Bold.ttc",
         "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
     ],
-    # Chinese Simplified (简体中文)
+    # Chinese Simplified
     "zh": [
         f"{_WIN}\\msyh.ttc",
         f"{_WIN}\\simhei.ttf",
@@ -58,7 +58,7 @@ FONT_CANDIDATES_BY_LANG = {
         f"{_LINUX_NOTO}/NotoSansCJK-Bold.ttc",
         "/System/Library/Fonts/PingFang.ttc",
     ],
-    # Arabic (العربية) — note: PIL renders RTL as LTR visually
+    # Arabic — note: PIL renders RTL as LTR visually
     "ar": [
         f"{_WIN}\\arabtype.ttf",
         f"{_WIN}\\trado.ttf",
@@ -66,14 +66,14 @@ FONT_CANDIDATES_BY_LANG = {
         f"{_LINUX_NOTO}/NotoNaskhArabic-Bold.ttf",
         "/System/Library/Fonts/GeezaPro.ttc",
     ],
-    # Hindi / Devanagari (हिन्दी)
+    # Hindi / Devanagari
     "hi": [
         f"{_WIN}\\NirmalaB.ttf",
         f"{_WIN}\\Nirmala.ttf",
         f"{_WIN}\\arial.ttf",
         f"{_LINUX_NOTO}/NotoSansDevanagari-Bold.ttf",
     ],
-    # Russian / Cyrillic (Русский)
+    # Russian / Cyrillic
     "ru": [
         f"{_WIN}\\arialbd.ttf",
         f"{_WIN}\\arial.ttf",
@@ -93,7 +93,7 @@ _LATIN_FONTS = [
 for _lang in ("en", "es", "fr", "de", "pt", "it"):
     FONT_CANDIDATES_BY_LANG[_lang] = _LATIN_FONTS
 
-# ── 언어별 채널명 ────────────────────────────────────────────
+# ── Channel name by language ──────────────────────────────────
 CHANNEL_BY_LANG = {
     "ko": "@AI테크뉴스",
     "en": "@AITechNews",
@@ -115,7 +115,7 @@ def _find_font(lang="ko"):
     for p in candidates:
         if os.path.exists(p):
             return p
-    # 최종 fallback: 어떤 CJK 폰트든 찾기
+    # Last resort: find any available CJK font
     for p in FONT_CANDIDATES_BY_LANG["ko"]:
         if os.path.exists(p):
             return p
@@ -128,14 +128,14 @@ class SlideMaker:
 
     def __init__(self, output_dir, searcher=None, images_dir=None, lang="ko"):
         self.output_dir = Path(output_dir)
-        self.searcher = searcher        # ImageSearcher 인스턴스 (없으면 배경 이미지 없이 진행)
+        self.searcher = searcher        # ImageSearcher instance (skipped if None)
         self.images_dir = Path(images_dir) if images_dir else None
         self.lang = lang
         self.channel_name = CHANNEL_BY_LANG.get(lang, "@AITechNews")
         self.font_path = _find_font(lang)
         self.fonts = self._load_fonts()
 
-    # ── 폰트 로드 ───────────────────────────────────────────
+    # ── Load fonts ───────────────────────────────────────────
     def _load_fonts(self):
         sizes = {
             "huge":   96,
@@ -158,7 +158,7 @@ class SlideMaker:
                 fonts[name] = ImageFont.load_default()
         return fonts
 
-    # ── 전체 슬라이드 생성 ──────────────────────────────────
+    # ── Generate all slides ──────────────────────────────────
     def create_all(self, script):
         slides = script.get("slides", [])
         topic = script.get("topic", "")
@@ -166,14 +166,14 @@ class SlideMaker:
         total = len(slides)
 
         for i, slide_data in enumerate(slides):
-            # 배경 이미지 검색 (searcher가 있을 때)
+            # Search for background image (when searcher is available)
             bg_image_path = None
             if self.searcher and self.images_dir:
                 self.images_dir.mkdir(parents=True, exist_ok=True)
                 query = f"{slide_data.get('headline', '')} {topic}"
                 img_out = str(self.images_dir / f"bg_{i+1:02d}.jpg")
                 bg_image_path = self.searcher.search(query, img_out)
-                status = "이미지 다운로드" if bg_image_path else "기본 배경"
+                status = "image downloaded" if bg_image_path else "default bg"
                 print(f"   [img] [{i+1}/{total}] {slide_data.get('section', '')} — {status}")
             else:
                 print(f"   [img] [{i+1}/{total}] {slide_data.get('section', '')} done")
@@ -184,11 +184,11 @@ class SlideMaker:
 
         return paths
 
-    # ── 단일 슬라이드 생성 ──────────────────────────────────
+    # ── Generate a single slide ──────────────────────────────
     def create_slide(self, data, slide_num, total_slides, output_path, bg_image_path=None):
         W, H = self.W, self.H
 
-        # 배경: 이미지 있으면 사용, 없으면 그라디언트
+        # Background: use image if available, otherwise draw gradient
         if bg_image_path:
             img = self._make_image_bg(bg_image_path)
         else:
@@ -205,7 +205,7 @@ class SlideMaker:
 
         draw = ImageDraw.Draw(img)
 
-        # 상단 녹색 악센트 바
+        # Top green accent bar (fading gradient)
         for y in range(8):
             intensity = int(255 * (1 - y / 8))
             draw.line([(0, y), (W, y)], fill=(
@@ -223,13 +223,13 @@ class SlideMaker:
         img.save(output_path, "PNG")
         return output_path
 
-    # ── 헤더 (로고 / 슬라이드 번호 / 타임코드) ─────────────
+    # ── Header (logo / slide number / timecode) ──────────────
     def _draw_header(self, draw, slide_num, total_slides, data):
         W = self.W
-        # 왼쪽: NVIDIA
+        # Left: NVIDIA logo text
         draw.text((40, 32), "NVIDIA", font=self.fonts["small"], fill=C["green"])
 
-        # 가운데: 슬라이드 번호
+        # Center: slide number badge
         num_text = f"{slide_num:02d} / {total_slides:02d}"
         bbox = draw.textbbox((0, 0), num_text, font=self.fonts["tiny"])
         tw = bbox[2] - bbox[0]
@@ -239,14 +239,14 @@ class SlideMaker:
                                 fill=C["card_bg"], outline=C["green_dim"], width=1)
         draw.text((cx, 36), num_text, font=self.fonts["tiny"], fill=C["green"])
 
-        # 오른쪽: 타임코드
+        # Right: timecode
         time_text = data.get("time", "")
         if time_text:
             bbox = draw.textbbox((0, 0), time_text, font=self.fonts["micro"])
             tw = bbox[2] - bbox[0]
             draw.text((W - 40 - tw, 40), time_text, font=self.fonts["micro"], fill=C["silver"])
 
-    # ── 프로그레스 바 ───────────────────────────────────────
+    # ── Progress bar ─────────────────────────────────────────
     def _draw_progress(self, draw, slide_num, total_slides):
         W = self.W
         bar_y = 86
@@ -254,12 +254,12 @@ class SlideMaker:
         fill_w = int(W * slide_num / total_slides)
         draw.rectangle([0, bar_y, fill_w, bar_y + 5], fill=C["green"])
 
-    # ── 메인 콘텐츠 ─────────────────────────────────────────
+    # ── Main content area ────────────────────────────────────
     def _draw_content(self, draw, data):
         W = self.W
         y = 118
 
-        # Section tag
+        # Section tag badge
         section = data.get("section", "")
         if section:
             tag = f"  {section}  "
@@ -271,7 +271,7 @@ class SlideMaker:
             draw.text((cx, y + 7), tag, font=self.fonts["tiny"], fill=(0, 0, 0))
             y += th + 34
 
-        # 아이콘 이모지
+        # Icon emoji
         icon = data.get("icon", "")
         if icon:
             try:
@@ -282,29 +282,29 @@ class SlideMaker:
             except Exception:
                 y += 40
 
-        # 헤드라인 (NVIDIA Green)
+        # Headline (NVIDIA Green)
         headline = data.get("headline", "")
         if headline:
             y = self._draw_centered(draw, headline, y, self.fonts["title"], C["green"], max_w=960) + 16
 
-        # 서브 헤드라인 (실버)
+        # Sub-headline (silver)
         sub = data.get("sub_headline", "")
         if sub:
             y = self._draw_centered(draw, sub, y, self.fonts["medium"], C["silver"], max_w=940) + 24
 
-        # 스탯 박스
+        # Stats boxes
         stats = data.get("stats") or []
         if stats:
             y = self._draw_stats(draw, stats, y) + 24
 
-        # 칩 뱃지
+        # Chip badges
         chips = data.get("chips") or []
         if chips:
             y = self._draw_chips(draw, chips, y)
 
         return y
 
-    # ── 스크립트 박스 (하단 고정) ────────────────────────────
+    # ── VO script box (pinned to bottom) ─────────────────────
     def _draw_script_box(self, draw, data):
         W, H = self.W, self.H
         script = data.get("script", "")
@@ -316,13 +316,13 @@ class SlideMaker:
 
         draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=18,
                                 fill=C["script_bg"], outline=C["border"], width=1)
-        # 왼쪽 녹색 바
+        # Left green accent bar
         draw.rounded_rectangle([bx, by, bx + 5, by + bh], radius=3, fill=C["green"])
 
-        # 라벨
+        # Label
         draw.text((bx + 24, by + 16), "● VO SCRIPT", font=self.fonts["micro"], fill=C["green"])
 
-        # 스크립트 텍스트
+        # Script text (truncated if too long)
         lines = self._wrap(draw, script, self.fonts["small"], bw - 52)
         ty = by + 54
         max_lines = 9
@@ -332,7 +332,7 @@ class SlideMaker:
             draw.text((bx + 24, ty), line, font=self.fonts["small"], fill=(215, 215, 200))
             ty += 38
 
-    # ── 하단 바 ─────────────────────────────────────────────
+    # ── Bottom bar ───────────────────────────────────────────
     def _draw_bottom(self, draw, data):
         W, H = self.W, self.H
         y = H - 44
@@ -342,7 +342,7 @@ class SlideMaker:
             draw.text((40, y), tags, font=self.fonts["micro"], fill=C["green_dim"])
         draw.text((W - 220, y), self.channel_name, font=self.fonts["micro"], fill=(55, 75, 35))
 
-    # ── 헬퍼: 중앙 정렬 텍스트 그리기 ──────────────────────
+    # ── Helper: draw centered text ───────────────────────────
     def _draw_centered(self, draw, text, y, font, color, max_w):
         W = self.W
         lines = self._wrap(draw, text, font, max_w)
@@ -354,7 +354,7 @@ class SlideMaker:
             y += th + 8
         return y
 
-    # ── 헬퍼: 픽셀 너비 기반 word wrap ─────────────────────
+    # ── Helper: pixel-width-based word wrap ──────────────────
     def _wrap(self, draw, text, font, max_w):
         result = []
         for para in text.replace("\r\n", "\n").split("\n"):
@@ -375,7 +375,7 @@ class SlideMaker:
                 result.append(" ".join(cur))
         return result
 
-    # ── 스탯 박스 ───────────────────────────────────────────
+    # ── Stats boxes ──────────────────────────────────────────
     def _draw_stats(self, draw, stats, y):
         W = self.W
         count = min(len(stats), 3)
@@ -401,7 +401,7 @@ class SlideMaker:
 
         return y + bh
 
-    # ── 칩 뱃지 ─────────────────────────────────────────────
+    # ── Chip badges ──────────────────────────────────────────
     def _draw_chips(self, draw, chips, y):
         W = self.W
         gap = 14
@@ -437,24 +437,22 @@ class SlideMaker:
         return y
 
     # ══════════════════════════════════════════════════════════
-    #  배경 이미지 지원
+    #  Background image support
     # ══════════════════════════════════════════════════════════
 
     def _make_image_bg(self, image_path):
-        """
-        다운로드된 이미지를 슬라이드 배경으로 변환.
-        1080×1920 center-crop → 어두운 오버레이 적용
-        """
+        """Convert a downloaded photo into a slide background.
+        Center-crops to 1080×1920 and applies a dark overlay for legibility."""
         W, H = self.W, self.H
         try:
             bg = Image.open(image_path).convert("RGB")
             bg = self._fit_image(bg, W, H)
 
-            # 55% 어두운 오버레이 (텍스트 가독성 확보)
+            # Dark overlay for text legibility (~58% opacity)
             overlay = Image.new("RGB", (W, H), (0, 0, 0))
             bg = Image.blend(bg, overlay, alpha=0.58)
 
-            # 상단 녹색 그라디언트 tint
+            # Green gradient tint at the top
             tint = Image.new("RGB", (W, H), (10, 30, 0))
             for row in range(300):
                 alpha = int(80 * (1 - row / 300))
@@ -468,12 +466,12 @@ class SlideMaker:
                     ))
             return bg
         except Exception as e:
-            print(f"   [warn] 배경 이미지 로드 실패 ({e}) — 기본 배경 사용")
+            print(f"   [warn] Failed to load background image ({e}) — using default")
             bg = np.full((H, W, 3), C["bg"], dtype=np.uint8)
             return Image.fromarray(bg, "RGB")
 
     def _fit_image(self, img, target_w, target_h):
-        """이미지를 target 크기에 맞게 center-crop"""
+        """Scale and center-crop image to exact target dimensions."""
         scale = max(target_w / img.width, target_h / img.height)
         new_w = int(img.width * scale)
         new_h = int(img.height * scale)
@@ -483,19 +481,17 @@ class SlideMaker:
         return img.crop((left, top, left + target_w, top + target_h))
 
     # ══════════════════════════════════════════════════════════
-    #  자막 렌더링 (video_builder에서 호출)
+    #  Subtitle rendering (called by video_builder)
     # ══════════════════════════════════════════════════════════
 
     def split_subtitle_chunks(self, text, duration, max_words=12):
-        """
-        스크립트 텍스트를 자막 청크로 분할.
-        반환: [(chunk_text, chunk_duration), ...]
-        """
+        """Split script text into timed subtitle chunks.
+        Returns: [(chunk_text, chunk_duration), ...]"""
         import re
         if not text or not text.strip():
             return []
 
-        # 문장 단위 분리 (한국어 + 영어 공통)
+        # Split by sentence boundary (works for Korean and Latin scripts)
         sentences = re.split(r"(?<=[.!?。！？])\s+", text.strip())
         chunks = []
         for sent in sentences:
@@ -512,7 +508,7 @@ class SlideMaker:
         if not chunks:
             return []
 
-        # 글자수 비율로 지속 시간 배분 (최소 1.5초 보장)
+        # Distribute duration by character count (min 1.5 s per chunk)
         total_chars = sum(len(c) for c in chunks)
         result = []
         for chunk in chunks:
@@ -520,7 +516,7 @@ class SlideMaker:
             dur = max(1.5, duration * ratio)
             result.append((chunk, dur))
 
-        # 총 지속시간을 실제 오디오 길이에 맞춤 (비율 조정)
+        # Scale all durations to match the actual audio length
         total_assigned = sum(d for _, d in result)
         factor = duration / total_assigned if total_assigned > 0 else 1.0
         result = [(t, d * factor) for t, d in result]
@@ -528,14 +524,12 @@ class SlideMaker:
         return result
 
     def render_subtitle_frame(self, base_array, text):
-        """
-        슬라이드 numpy 배열 위에 자막 바를 합성한 새 numpy 배열 반환.
-        (원본 배열은 변경하지 않음)
-        """
+        """Composite a subtitle bar onto a slide numpy array.
+        Returns a new array — the original is not modified."""
         W, H = self.W, self.H
         img = Image.fromarray(base_array.copy()).convert("RGBA")
 
-        # 반투명 검정 자막 바 (하단)
+        # Semi-transparent black subtitle bar at the bottom
         bar_h = 190
         bar_y = H - bar_h - 50
         bar = Image.new("RGBA", (W, bar_h), (0, 0, 0, 195))
@@ -544,7 +538,7 @@ class SlideMaker:
         img_rgb = img.convert("RGB")
         draw = ImageDraw.Draw(img_rgb)
 
-        # 텍스트 래핑
+        # Word-wrap text to fit inside the bar
         lines = self._wrap(draw, text, self.fonts["normal"], W - 80)
         line_h = 46
         total_h = len(lines) * line_h
@@ -554,9 +548,9 @@ class SlideMaker:
             bbox = draw.textbbox((0, 0), line, font=self.fonts["normal"])
             tw = bbox[2] - bbox[0]
             x = (W - tw) // 2
-            # 그림자 (가독성)
+            # Drop shadow for readability
             draw.text((x + 2, ty + 2), line, font=self.fonts["normal"], fill=(0, 0, 0))
-            # 흰색 텍스트
+            # White text
             draw.text((x, ty), line, font=self.fonts["normal"], fill=(255, 255, 255))
             ty += line_h
 
